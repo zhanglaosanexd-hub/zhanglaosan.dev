@@ -13,9 +13,19 @@ export const size = {
 }
 
 export async function generateStaticParams() {
-  const bookmarks = await getBookmarks()
+  let bookmarks = []
+
+  try {
+    // 原本访问 API 的代码可以保留注释
+    // bookmarks = await getBookmarks()
+  } catch (e) {
+    console.log("Bookmarks API unavailable, skipping")
+  }
+
   return bookmarks.map((bookmark) => ({ slug: bookmark.slug }))
 }
+
+
 
 export async function GET(_, props) {
   const params = await props.params
