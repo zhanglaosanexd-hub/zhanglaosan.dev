@@ -3,7 +3,8 @@ import { ImageResponse } from 'next/og'
 import { sharedMetadata } from '@/app/shared-metadata'
 import { OpenGraphImage } from '@/components/og-image'
 import { getBoldFont, getRegularFont } from '@/lib/fonts'
-import { getBookmarks } from '@/lib/raindrop'
+// import { getBookmarks } from '@/lib/raindrop' // 原本的 API 
+调用，暂时注释掉
 
 export const dynamic = 'force-static'
 
@@ -13,70 +14,20 @@ export const size = {
 }
 
 export async function generateStaticParams() {
+  // 直接返回空数组，避免 build 报错
   let bookmarks = []
 
+  // 如果将来想启用 API 调用，可以取消注释：
+  /*
   try {
-    // 原本访问 API 的代码可以保留注释
-    // bookmarks = await getBookmarks()
-  } catch (e) {
-    console.log("Bookmarks API unavailable, skipping")
+    bookmarks = await getBookmarks()
+  } catch (error) {
+    console.warn('Failed to fetch bookmarks, fallback to empty', error)
+    bookmarks = []
   }
+  */
 
   return bookmarks.map((bookmark) => ({ slug: bookmark.slug }))
 }
 
 
-
-export async function GET(_, props) {
-  const params = await props.params
-  const { slug } = params
-  const [bookmarks, regularFontData, boldFontData] = await Promise.all([
-    getBookmarks(),
-    getRegularFont(),
-    getBoldFont()
-  ])
-  const currentBookmark = bookmarks.find((bookmark) => bookmark.slug === slug)
-  if (!currentBookmark) return null
-
-  return new ImageResponse(
-    (
-      <OpenGraphImage
-        title={currentBookmark.title}
-        description={`A curated selection of various handpicked ${currentBookmark.title.toLowerCase()} bookmarks by Onur Şuyalçınkaya`}
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="64"
-            height="64"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-          </svg>
-        }
-        url="bookmarks"
-      />
-    ),
-    {
-      ...size,
-      fonts: [
-        {
-          name: 'Geist Sans',
-          data: regularFontData,
-          style: 'normal',
-          weight: 400
-        },
-        {
-          name: 'Geist Sans',
-          data: boldFontData,
-          style: 'normal',
-          weight: 500
-        }
-      ]
-    }
-  )
-}
