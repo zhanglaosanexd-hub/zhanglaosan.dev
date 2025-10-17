@@ -4,7 +4,7 @@ import { sharedMetadata } from '@/app/shared-metadata'
 import { OpenGraphImage } from '@/components/og-image'
 import { getBoldFont, getRegularFont } from '@/lib/fonts'
 // import { getBookmarks } from '@/lib/raindrop' // 原本的 API 
-调用，暂时注释掉
+//调用，暂时注释掉
 
 export const dynamic = 'force-static'
 
